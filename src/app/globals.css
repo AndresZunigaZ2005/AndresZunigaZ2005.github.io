@@ -60,10 +60,15 @@ body {
 /* ---------------------------------------------------------------------------
    Reveal-on-scroll
 
-   Content is only hidden when JavaScript is running to reveal it again: the
-   `data-js` attribute is set by an inline script in the root layout, and
-   `is-visible` is added by an IntersectionObserver. With scripting off, or on
-   the pass before hydration, every section renders fully visible.
+   Content is only hidden when JavaScript is running to reveal it again, and
+   that condition is asked of CSS directly through the `scripting` media
+   feature. Nothing touches the DOM before hydration, so `<html>` stays exactly
+   as the server rendered it.
+
+   `scripting` resolves to `none` with scripting off and to `initial-only` when
+   printing, so in both cases the rule is skipped and every section renders
+   fully visible. A browser too old to know the feature degrades the same way:
+   no fade, never hidden content.
 --------------------------------------------------------------------------- */
 .reveal {
   transition:
@@ -72,10 +77,12 @@ body {
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-[data-js] .reveal:not(.is-visible) {
-  opacity: 0;
-  transform: translateY(14px);
-  will-change: opacity, transform;
+@media (scripting: enabled) {
+  .reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+    will-change: opacity, transform;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -83,7 +90,8 @@ body {
     scroll-behavior: auto;
   }
 
-  [data-js] .reveal:not(.is-visible) {
+  /* Same specificity as the rule above, but later in the file, so it wins. */
+  .reveal:not(.is-visible) {
     opacity: 1;
     transform: none;
   }

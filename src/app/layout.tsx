@@ -81,13 +81,6 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       data-scroll-behavior="smooth"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        {/* Runs before first paint: the reveal-on-scroll animation in
-            globals.css only hides content when scripting is available. */}
-        <script
-          dangerouslySetInnerHTML={{ __html: "document.documentElement.dataset.js=''" }}
-        />
-      </head>
       <body className="flex min-h-full flex-col bg-canvas text-ink">
         <LanguageProvider>
           <SkipLink />

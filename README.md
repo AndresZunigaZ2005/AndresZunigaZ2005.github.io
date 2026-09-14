@@ -102,8 +102,8 @@ tiempo de ejecución).
 - Tipografía: Inter para texto, JetBrains Mono para etiquetas y metadata, ambas
   vía `next/font`.
 - Animación: solo `fade-in` al entrar en viewport (`ui/Reveal.tsx`), que aplica
-  una clase al nodo en vez de estado de React. El estado oculto está limitado a
-  `[data-js]` (atributo que pone un script inline en el layout), así que sin
-  JavaScript todo se ve desde el principio. `prefers-reduced-motion` lo anula por
-  completo.
+  una clase al nodo en vez de estado de React. El estado oculto vive dentro de
+  `@media (scripting: enabled)`, así que sin JavaScript —y al imprimir— todo se
+  ve desde el principio, sin que nada toque el DOM antes de la hidratación.
+  `prefers-reduced-motion` lo anula por completo.
 - Contraste: los tres tonos de texto sobre el fondo cumplen WCAG AA (≥ 4.5:1).
