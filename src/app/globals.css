@@ -1,0 +1,114 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   A neutral canvas with five pastel accents. The accents are decoration only —
+   never the sole carrier of meaning, and never used for body text.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-canvas: #fafaf8;
+  --color-surface: #ffffff;
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-faint: #72727a;
+
+  --color-line: rgba(29, 29, 31, 0.1);
+  --color-line-strong: rgba(29, 29, 31, 0.18);
+
+  --color-pastel-blue: #dceaf7;
+  --color-pastel-green: #ddeee5;
+  --color-pastel-lavender: #e8e2f3;
+  --color-pastel-peach: #f5e2d5;
+  --color-pastel-yellow: #f4efcf;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  /* Sticky header clearance for in-page anchors. */
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-pastel-lavender);
+  color: var(--color-ink);
+}
+
+/* A single, consistent focus ring everywhere. */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   Reveal-on-scroll
+
+   Content is only hidden when JavaScript is running to reveal it again: the
+   `data-js` attribute is set by an inline script in the root layout, and
+   `is-visible` is added by an IntersectionObserver. With scripting off, or on
+   the pass before hydration, every section renders fully visible.
+--------------------------------------------------------------------------- */
+.reveal {
+  transition:
+    opacity 600ms var(--ease-out-soft),
+    transform 600ms var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-js] .reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(14px);
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-js] .reveal:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Horizontal scrollers (screenshot strips) without a visible scrollbar. */
+.scroll-x {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+.scroll-x::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-x::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-strong);
+  border-radius: 999px;
+}

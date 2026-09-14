@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portafolio — Andrés Felipe Zúñiga Zuluaga
 
-## Getting Started
-
-First, run the development server:
+Portafolio personal bilingüe (ES / EN) construido con Next.js 16 (App Router), TypeScript y Tailwind CSS v4.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev     # desarrollo
+npm run build   # build de producción
+npm run lint    # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estructura
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/                  # App Router: layout, página, metadata, iconos, sitemap
+│   ├── globals.css       # tokens de diseño (@theme) y estilos base
+│   ├── icon.tsx          # favicon generado con ImageResponse
+│   ├── opengraph-image.tsx
+│   ├── layout.tsx
+│   ├── page.tsx          # Server Component: solo composición
+│   ├── robots.ts
+│   └── sitemap.ts
+├── components/           # una sección por archivo
+│   └── ui/               # primitivas compartidas (Section, Reveal, ButtonLink, Icons)
+├── data/                 # contenido tipado: proyectos, tecnologías, enlaces
+├── i18n/                 # diccionarios + estado de idioma
+├── lib/                  # helpers de GitHub/GitLab y mapas de acento
+└── types/                # tipos de dominio compartidos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+public/projects/          # capturas por proyecto
+```
 
-## Learn More
+## Idiomas
 
-To learn more about Next.js, take a look at the following resources:
+El contenido vive en `src/i18n/es.ts` y `src/i18n/en.ts`; los componentes nunca
+contienen texto. `es.ts` define la forma canónica y `Dictionary = typeof es`, así
+que a `en.ts` le falta una clave, el build falla.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Añadir un idioma: crear el diccionario, añadirlo a `dictionaries` y a `LANGUAGES`
+en `src/i18n/index.ts`. Ningún componente cambia.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+El idioma activo se guarda en `localStorage` y se lee con `useSyncExternalStore`,
+de modo que el HTML del servidor y el de hidratación siempre son español (el
+idioma por defecto) y la preferencia se aplica justo después de hidratar.
 
-## Deploy on Vercel
+### Server y Client Components
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`page.tsx` y todo lo de `app/` son Server Components. Las secciones son Client
+Components porque leen el idioma activo del contexto — el único estado de la
+página. El coste es un bundle pequeño de texto; a cambio, cambiar de idioma es
+instantáneo y no hay navegación ni recarga.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Proyectos
+
+Los proyectos están en `src/data/projects.ts` con una estructura tipada
+(`src/types/index.ts`). Para añadir uno, se añade una entrada; `Projects.tsx`
+renderiza lo que exporte el archivo, en orden. `ProjectCard` tiene una variante
+`featured` que solo cambia escala y énfasis — el marcado es el mismo.
+
+Toda la información de los proyectos proviene de sus repositorios públicos
+(README, manifiesto, estadísticas de lenguajes) o fue aportada directamente.
+El campo `source` lo deja registrado.
+
+### Capturas
+
+Van en `public/projects/<id>/` y se referencian desde la entrada del proyecto con
+`width` y `height` reales, para que `next/image` reserve el espacio y no haya
+salto de layout. Las capturas de Expenses Manager se tomaron de `Docs/screenshots`
+de su propio repositorio.
+
+## Configuración
+
+Todos los valores pendientes se leen de variables de entorno públicas (ver
+`.env.example`). Mientras estén vacías, la interfaz muestra el enlace como
+«Por definir» en lugar de inventar una URL:
+
+| Variable | Uso |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | origen canónico y `metadataBase` |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | correo de contacto |
+| `NEXT_PUBLIC_LINKEDIN_URL` | perfil de LinkedIn |
+| `NEXT_PUBLIC_ORCID_URL` | ORCID iD |
+
+## GitHub / GitLab
+
+`src/lib/github.ts` y `src/lib/gitlab.ts` están preparados pero no se usan
+todavía: la página se renderiza entera desde `src/data`, así que una caída o un
+rate limit de esas APIs no puede dejarla en blanco. Cuando se conecten, deben
+llamarse desde un Server Component o un Route Handler, y `null` debe tratarse
+como «usar el contenido estático».
+
+Si alguna vez hiciera falta un token, va en `GITHUB_TOKEN` / `GITLAB_TOKEN`
+(nunca `NEXT_PUBLIC_*`) y se lee solo en el servidor.
+
+## Diseño
+
+Tokens en `src/app/globals.css`, bajo `@theme`: fondo neutro, dos niveles de
+texto y cinco acentos pastel usados con moderación (`src/lib/accents.ts` mapea
+cada acento a clases fijas, porque Tailwind no ve nombres de clase construidos en
+tiempo de ejecución).
+
+- Tipografía: Inter para texto, JetBrains Mono para etiquetas y metadata, ambas
+  vía `next/font`.
+- Animación: solo `fade-in` al entrar en viewport (`ui/Reveal.tsx`), que aplica
+  una clase al nodo en vez de estado de React. El estado oculto está limitado a
+  `[data-js]` (atributo que pone un script inline en el layout), así que sin
+  JavaScript todo se ve desde el principio. `prefers-reduced-motion` lo anula por
+  completo.
+- Contraste: los tres tonos de texto sobre el fondo cumplen WCAG AA (≥ 4.5:1).
