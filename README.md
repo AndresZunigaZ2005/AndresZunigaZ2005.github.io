@@ -1,5 +1,7 @@
 # Portafolio — Andrés Felipe Zúñiga Zuluaga
 
+**→ [andreszunigaz2005.github.io](https://andreszunigaz2005.github.io/)**
+
 Portafolio personal bilingüe (ES / EN) construido con Next.js 16 (App Router), TypeScript y Tailwind CSS v4.
 
 ```bash
@@ -14,8 +16,8 @@ npm run lint    # ESLint
 src/
 ├── app/                  # App Router: layout, página, metadata, iconos, sitemap
 │   ├── globals.css       # tokens de diseño (@theme) y estilos base
-│   ├── icon.tsx          # favicon generado con ImageResponse
-│   ├── opengraph-image.tsx
+│   ├── icon.png/         # favicon generado con ImageResponse
+│   ├── opengraph-image.png/
 │   ├── layout.tsx
 │   ├── page.tsx          # Server Component: solo composición
 │   ├── robots.ts
