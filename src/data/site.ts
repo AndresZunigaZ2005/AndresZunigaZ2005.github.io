@@ -23,12 +23,9 @@ export const links = {
   github: 'https://github.com/AndresZunigaZ2005',
   gitlab: 'https://gitlab.com/AndresZunigaZ2005',
   instagram: 'https://instagram.com/andresf.zz',
-  /** Pending — set NEXT_PUBLIC_LINKEDIN_URL once the profile URL is known. */
-  linkedin: env(process.env.NEXT_PUBLIC_LINKEDIN_URL),
-  /** Pending — set NEXT_PUBLIC_ORCID_URL once the ORCID iD is known. */
-  orcid: env(process.env.NEXT_PUBLIC_ORCID_URL),
-  /** Pending — set NEXT_PUBLIC_CONTACT_EMAIL once the professional address is chosen. */
-  email: env(process.env.NEXT_PUBLIC_CONTACT_EMAIL),
+  linkedin: 'https://www.linkedin.com/in/andresf-zunigaz',
+  orcid: 'https://orcid.org/0009-0000-9881-2143',
+  email: 'andres.felipezz@hotmail.com',
 } as const
 
 /**
