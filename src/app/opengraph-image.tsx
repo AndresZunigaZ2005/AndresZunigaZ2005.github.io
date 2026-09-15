@@ -10,6 +10,8 @@ import { person } from '@/data/site'
 export const alt = es.meta.ogAlt
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
+/** Rendered once at build time: the static export has no server to render it on. */
+export const dynamic = 'force-static'
 
 export default function OpenGraphImage() {
   return new ImageResponse(

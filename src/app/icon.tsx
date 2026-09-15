@@ -3,6 +3,8 @@ import { ImageResponse } from 'next/og'
 /** Favicon, generated at build time so there is no binary asset to keep in sync. */
 export const size = { width: 64, height: 64 }
 export const contentType = 'image/png'
+/** Rendered once at build time: the static export has no server to render it on. */
+export const dynamic = 'force-static'
 
 export default function Icon() {
   return new ImageResponse(
