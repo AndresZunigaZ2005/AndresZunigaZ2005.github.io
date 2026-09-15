@@ -1,19 +1,22 @@
 import { ImageResponse } from 'next/og'
-import { es } from '@/i18n'
 import { person } from '@/data/site'
 
 /**
  * Social preview card. Built from the same tokens as the page — neutral canvas,
  * one pastel accent, generous negative space — so a shared link looks like the
  * site it points at.
+ *
+ * This is a route handler rather than the `opengraph-image.tsx` metadata
+ * convention so the URL ends in `.png`. GitHub Pages types a response from the
+ * file extension alone, and the convention emits an extensionless file that
+ * social crawlers reject as `application/octet-stream`. The alt text and
+ * dimensions therefore live in the layout's metadata.
  */
-export const alt = es.meta.ogAlt
-export const size = { width: 1200, height: 630 }
-export const contentType = 'image/png'
-/** Rendered once at build time: the static export has no server to render it on. */
 export const dynamic = 'force-static'
 
-export default function OpenGraphImage() {
+const size = { width: 1200, height: 630 }
+
+export function GET() {
   return new ImageResponse(
     (
       <div

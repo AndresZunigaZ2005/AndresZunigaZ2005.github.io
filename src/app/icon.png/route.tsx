@@ -1,12 +1,18 @@
 import { ImageResponse } from 'next/og'
 
-/** Favicon, generated at build time so there is no binary asset to keep in sync. */
-export const size = { width: 64, height: 64 }
-export const contentType = 'image/png'
-/** Rendered once at build time: the static export has no server to render it on. */
+/**
+ * Favicon, generated at build time so there is no binary asset to keep in sync.
+ *
+ * This is a route handler rather than the `icon.tsx` metadata convention so the
+ * URL ends in `.png`. GitHub Pages types a response from the file extension
+ * alone, and the convention emits an extensionless file that would be served as
+ * `application/octet-stream`.
+ */
 export const dynamic = 'force-static'
 
-export default function Icon() {
+const size = { width: 64, height: 64 }
+
+export function GET() {
   return new ImageResponse(
     (
       <div
