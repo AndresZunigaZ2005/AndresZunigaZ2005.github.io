@@ -46,7 +46,67 @@ export const projects: Project[] = [
       },
     ],
     status: { es: 'En desarrollo activo', en: 'Active development' },
-    screenshots: [],
+    // Generated from the application itself with `npm run qa:shots` in the
+    // EVA Tracker repository: the real interface driven against a fake store.
+    // The employee, the times and the projects in them are invented, so no real
+    // shift of anyone's ends up on a public page. 420x680 is the size the
+    // window opens at, at 2x.
+    screenshots: [
+      {
+        src: '/projects/eva-tracker/clocked-in.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'EVA Tracker con un turno abierto: el temporizador corriendo, el proyecto del turno y el historial',
+          en: 'EVA Tracker with an open shift: the timer running, the shift project and the history',
+        },
+      },
+      {
+        src: '/projects/eva-tracker/break.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'Descanso en curso en EVA Tracker: la cuenta atrás del descanso mientras el temporizador principal sigue',
+          en: 'A break in progress in EVA Tracker: the break counting down while the main timer keeps running',
+        },
+      },
+      {
+        src: '/projects/eva-tracker/break-overrun.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'Aviso a pantalla completa de EVA Tracker por pasarse del tiempo de descanso',
+          en: 'Full-screen EVA Tracker warning for going past the break allowance',
+        },
+      },
+      {
+        src: '/projects/eva-tracker/idle-warning.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'Aviso de inactividad de EVA Tracker tras quince minutos sin teclado ni ratón',
+          en: 'EVA Tracker idle warning after fifteen minutes with no keyboard or mouse',
+        },
+      },
+      {
+        src: '/projects/eva-tracker/clocked-out.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'EVA Tracker fuera de turno, con el historial de turnos cerrados',
+          en: 'EVA Tracker off shift, showing the history of closed shifts',
+        },
+      },
+      {
+        src: '/projects/eva-tracker/login.png',
+        width: 420,
+        height: 680,
+        alt: {
+          es: 'Pantalla de inicio de sesión de EVA Tracker con correo y contraseña',
+          en: 'EVA Tracker login screen with e-mail and password',
+        },
+      },
+    ],
     source: 'repository',
   },
   {

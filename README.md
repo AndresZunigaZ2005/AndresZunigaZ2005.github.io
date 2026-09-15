@@ -67,8 +67,20 @@ El campo `source` lo deja registrado.
 
 Van en `public/projects/<id>/` y se referencian desde la entrada del proyecto con
 `width` y `height` reales, para que `next/image` reserve el espacio y no haya
-salto de layout. Las capturas de Expenses Manager se tomaron de `Docs/screenshots`
-de su propio repositorio.
+salto de layout. `ProjectCard` las coloca en una tira horizontal de ancho fijo y
+alto automático, así que **todas las capturas de un proyecto deben compartir
+proporción**: una con otra forma deja la fila desigual.
+
+Origen de cada juego:
+
+- **Expenses Manager** — tomadas de `Docs/screenshots` de su propio repositorio.
+- **EVA Tracker** — generadas desde la aplicación con `npm run qa:shots` en su
+  repositorio (`test/manual/qa-screenshots.js`), que arranca la interfaz real
+  contra un almacén falso y fotografía una pantalla por estado. La empleada, las
+  horas y los proyectos que se ven son inventados: ningún turno real de nadie
+  acaba en una página pública. Son 420x680 a 2x, el tamaño con el que abre la
+  ventana. Para actualizarlas se regeneran allí y se copian aquí.
+- **ViveTuZona Android** — pendientes.
 
 ## Configuración
 
