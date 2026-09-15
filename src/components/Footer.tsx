@@ -60,7 +60,6 @@ export function Footer() {
 
         <div className="flex flex-col gap-3 border-t border-line py-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[11px] tracking-wide text-faint">{footer.rights}</p>
-          <p className="font-mono text-[11px] tracking-wide text-faint">{footer.builtWith}</p>
         </div>
       </Container>
     </footer>
