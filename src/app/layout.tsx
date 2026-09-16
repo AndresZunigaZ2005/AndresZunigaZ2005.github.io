@@ -1,20 +1,28 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Press_Start_2P, VT323 } from 'next/font/google'
 import './globals.css'
 import { SkipLink } from '@/components/SkipLink'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
 import { en, es } from '@/i18n'
 import { links, person, siteUrl } from '@/data/site'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
+/**
+ * Two bitmap faces, both single-weight, both loaded with `latin-ext` because
+ * the Spanish copy is full of accents and inverted punctuation — a face without
+ * that subset would drop every "ñ", "é" and "¿" to a fallback and break the
+ * pixel grid mid-word.
+ */
+const pressStart = Press_Start_2P({
+  subsets: ['latin', 'latin-ext'],
+  weight: '400',
+  variable: '--font-press-start',
   display: 'swap',
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
+const vt323 = VT323({
+  subsets: ['latin', 'latin-ext'],
+  weight: '400',
+  variable: '--font-vt323',
   display: 'swap',
 })
 
@@ -82,8 +90,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#fafaf8',
-  colorScheme: 'light',
+  themeColor: '#1a1a2e',
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
@@ -93,9 +101,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       // the visitor switches.
       lang={es.meta.locale}
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${pressStart.variable} ${vt323.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col bg-canvas text-ink">
+      <body className="flex min-h-full flex-col bg-bg text-ink">
         <LanguageProvider>
           <SkipLink />
           {children}

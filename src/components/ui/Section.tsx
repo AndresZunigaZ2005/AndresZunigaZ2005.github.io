@@ -1,19 +1,31 @@
 import type { ReactNode } from 'react'
 import { Reveal } from './Reveal'
+import { accentFill } from '@/lib/accents'
+import type { Accent } from '@/types'
 
 interface SectionProps {
   id: string
+  /** Short name for the header strip. This is the section's heading. */
   eyebrow?: string
+  /** The claim the section makes, set under the strip. */
   title?: ReactNode
   lede?: string
   children: ReactNode
-  /** Extra classes for the outer `<section>`, e.g. a top hairline. */
   className?: string
-  /** Renders the heading block centred instead of left-aligned. */
-  align?: 'start' | 'center'
+  /**
+   * Gold marks a section you act on, sky one you read, lavender a supporting
+   * one. The colour is the section's identity and repeats nowhere else.
+   */
+  accent?: Accent
 }
 
-/** Shared page container. One place to change the gutter and max width. */
+/**
+ * Shared page container.
+ *
+ * 1024px, narrower than the old layout, because the page is a stack of framed
+ * windows rather than an editorial grid — past this width the frames stop
+ * reading as screens and start reading as stretched boxes.
+ */
 export function Container({
   children,
   className = '',
@@ -22,27 +34,24 @@ export function Container({
   className?: string
 }) {
   return (
-    <div className={`mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-10 ${className}`.trim()}>
+    <div className={`mx-auto w-full max-w-[64rem] px-6 sm:px-8 ${className}`.trim()}>
       {children}
     </div>
   )
 }
 
-/** A short, all-caps monospace label. Used for section eyebrows and metadata. */
+/** A short label in the body face. Used for metadata and field names. */
 export function Eyebrow({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return (
-    <span
-      className={`font-mono text-[11px] uppercase tracking-[0.18em] text-faint ${className}`.trim()}
-    >
-      {children}
-    </span>
-  )
+  return <span className={`t-meta text-muted ${className}`.trim()}>{children}</span>
 }
 
 /**
- * A page section with consistent vertical rhythm and an optional heading block.
- * Sections are the only thing that sets vertical spacing, so the page keeps an
- * even measure from top to bottom.
+ * A page section.
+ *
+ * The heading is a filled strip rather than a floating label above a headline:
+ * a handheld menu names the screen you are on in a bar at the top, and doing
+ * the same here means the section name is a real region label instead of
+ * decoration. Sections are the only thing that sets vertical spacing.
  */
 export function Section({
   id,
@@ -51,41 +60,32 @@ export function Section({
   lede,
   children,
   className = '',
-  align = 'start',
+  accent = 'gold',
 }: SectionProps) {
   const headingId = `${id}-heading`
-  const centred = align === 'center'
 
   return (
     <section
       id={id}
-      aria-labelledby={title ? headingId : undefined}
-      className={`scroll-mt-24 py-20 sm:py-28 lg:py-36 ${className}`.trim()}
+      aria-labelledby={eyebrow ? headingId : undefined}
+      className={`scroll-mt-24 py-16 sm:py-24 ${className}`.trim()}
     >
       <Container>
         {(eyebrow || title || lede) && (
-          <Reveal className={`max-w-3xl ${centred ? 'mx-auto text-center' : ''}`.trim()}>
-            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            {title && (
+          <Reveal className="max-w-[42rem]">
+            {eyebrow && (
               <h2
                 id={headingId}
-                className="mt-5 text-balance text-3xl font-medium tracking-[-0.02em] text-ink sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]"
+                className={`t-key inline-block border-4 border-edge px-4 py-2 text-edge shadow-[0_4px_0_0_var(--color-edge)] ${accentFill[accent]}`}
               >
-                {title}
+                {eyebrow}
               </h2>
             )}
-            {lede && (
-              <p
-                className={`mt-5 max-w-2xl text-base leading-relaxed text-muted sm:text-lg ${
-                  centred ? 'mx-auto' : ''
-                }`.trim()}
-              >
-                {lede}
-              </p>
-            )}
+            {title && <p className="mt-8 text-[32px] leading-10 text-ink">{title}</p>}
+            {lede && <p className="mt-4 text-muted">{lede}</p>}
           </Reveal>
         )}
-        <div className={eyebrow || title || lede ? 'mt-14 sm:mt-16' : ''}>{children}</div>
+        <div className={eyebrow || title || lede ? 'mt-12' : ''}>{children}</div>
       </Container>
     </section>
   )

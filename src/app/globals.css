@@ -1,88 +1,484 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
-   Design tokens
-   A neutral canvas with five pastel accents. The accents are decoration only —
-   never the sole carrier of meaning, and never used for body text.
+   Design tokens — 16-bit handheld RPG
+
+   Nine values, no more: two backgrounds, one outline, two text levels and four
+   accents. Accents appear in exactly four places — panel title bars, the menu
+   cursor, badges and buttons — so colour always means "this is the thing you
+   act on" rather than decoration.
 --------------------------------------------------------------------------- */
 @theme {
-  --color-canvas: #fafaf8;
-  --color-surface: #ffffff;
-  --color-ink: #1d1d1f;
-  --color-muted: #6e6e73;
-  --color-faint: #72727a;
+  --color-bg: #1a1a2e;
+  --color-panel: #2d2d44;
+  --color-edge: #0c0c0c;
 
-  --color-line: rgba(29, 29, 31, 0.1);
-  --color-line-strong: rgba(29, 29, 31, 0.18);
+  --color-ink: #ffffff;
+  --color-muted: #a0a0c0;
 
-  --color-pastel-blue: #dceaf7;
-  --color-pastel-green: #ddeee5;
-  --color-pastel-lavender: #e8e2f3;
-  --color-pastel-peach: #f5e2d5;
-  --color-pastel-yellow: #f4efcf;
+  --color-gold: #ffcb05;
+  --color-sky: #4a9eff;
+  --color-leaf: #3ddc84;
+  --color-ember: #ff4757;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
-
-  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --font-display: var(--font-press-start), ui-monospace, monospace;
+  --font-body: var(--font-vt323), ui-monospace, monospace;
 }
 
 /* ---------------------------------------------------------------------------
    Base
 --------------------------------------------------------------------------- */
-html {
-  scroll-behavior: smooth;
-  /* Sticky header clearance for in-page anchors. */
-  scroll-padding-top: 5.5rem;
-  -webkit-text-size-adjust: 100%;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Sticky header (64px) plus one grid step. */
+    scroll-padding-top: 96px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    /*
+      Dither instead of a gradient: a hard 8px checkerboard in the panel colour.
+      Two flat colours, crisp edges, no alpha — the way a tile-based console
+      would shade a background.
+
+      It is an SVG tile rather than a `repeating-conic-gradient` because the
+      gradient version is re-rasterised across the whole scrolling surface and
+      locks the renderer on a page this tall. A tile is decoded once and handed
+      to the compositor. The colour is spelled out because a data URI cannot
+      read a custom property; it is `--color-panel` and has to be changed with
+      it.
+    */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%232d2d44'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%232d2d44'/%3E%3C/svg%3E");
+    background-size: 16px 16px;
+
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  /*
+    Pixel type has to land on whole pixels to stay crisp, so antialiasing is
+    turned off wherever text is set.
+  */
+  body,
+  button,
+  input {
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+  }
+
+  ::selection {
+    background-color: var(--color-gold);
+    color: var(--color-edge);
+  }
+
+  /*
+    One focus ring everywhere. White sits 4px outside the element, so it reads
+    against the page rather than against whatever the element is filled with —
+    including the gold buttons, where a gold ring would disappear.
+  */
+  :focus-visible {
+    outline: 4px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
+  /* Hard corners are the whole point; nothing is allowed to round. */
+  * {
+    border-radius: 0;
+  }
 }
 
-body {
-  background-color: var(--color-canvas);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  text-rendering: optimizeLegibility;
-}
+@layer components {
+  /* ---------------------------------------------------------------------------
+     Type scale
 
-::selection {
-  background-color: var(--color-pastel-lavender);
-  color: var(--color-ink);
-}
+     Press Start 2P is an 8px bitmap face: it only stays crisp at multiples of
+     8, so its sizes are 16 / 24 / 32 and nothing in between. It is reserved for
+     short strings — names, headings, title bars, button labels.
 
-/* A single, consistent focus ring everywhere. */
-:focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
-  border-radius: 4px;
+     VT323 carries everything anyone actually has to read. Its cap height is
+     roughly half its em, so 24px here reads at about the size of 16px Inter.
+  --------------------------------------------------------------------------- */
+  .t-hero,
+  .t-h2,
+  .t-h3,
+  .t-key {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .t-hero {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .t-h2,
+  .t-h3,
+  .t-key {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .t-hero {
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    .t-h2 {
+      font-size: 24px;
+      line-height: 32px;
+    }
+  }
+
+  /* Small metadata stays in the body face — 16px Press Start 2P is too wide for
+     a row of labels, and anything smaller stops being readable. */
+  .t-meta {
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .t-small {
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Panel — the window frame every block of content sits in.
+
+     Built from nested boxes rather than stacked box-shadows, so the 4px light
+     bevel stays visible around a full-bleed title bar:
+       4px outer outline (edge) · 4px bevel (muted) · solid fill (panel)
+     plus an 8px hard drop shadow. No blur anywhere.
+  --------------------------------------------------------------------------- */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-muted);
+    border: 4px solid var(--color-edge);
+    padding: 4px;
+    box-shadow: 0 8px 0 0 var(--color-edge);
+  }
+
+  /*
+    The frame stretches and the fill stretches with it. Without this, a panel
+    told to match the height of a taller neighbour grows but its fill does not,
+    and the bevel colour shows through the bottom as a stray light block.
+  */
+  .panel-inner {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    background-color: var(--color-panel);
+  }
+
+  /*
+    The 90s title bar: accent fill, near-black label, hard rule underneath.
+
+    It wraps. A long title in a bitmap face has a very wide minimum — a grid
+    item cannot shrink below its own min-content, so a title bar that refused to
+    wrap would set the width of every panel in the row and push the whole page
+    into a horizontal scroll on a phone. Wrapping lets the metadata drop to its
+    own line instead.
+  */
+  .panel-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 4px solid var(--color-edge);
+    color: var(--color-edge);
+  }
+
+  .panel-body {
+    flex: 1 1 auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .panel-body {
+      padding: 24px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------------
+     Button — chunky, with a hard shadow it sits down into when pressed.
+  --------------------------------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 4px solid var(--color-edge);
+    box-shadow: 0 4px 0 0 var(--color-edge);
+    transition: none;
+  }
+
+  .btn:active {
+    /* Travels exactly as far as its own shadow, so it lands flush. */
+    transform: translateY(4px);
+    box-shadow: 0 0 0 0 var(--color-edge);
+  }
+
+  .btn-primary {
+    background-color: var(--color-gold);
+    color: var(--color-edge);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-panel);
+    color: var(--color-ink);
+    box-shadow:
+      inset 0 0 0 4px var(--color-muted),
+      0 4px 0 0 var(--color-edge);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-bg);
+  }
+
+  .btn-secondary:active {
+    box-shadow:
+      inset 0 0 0 4px var(--color-muted),
+      0 0 0 0 var(--color-edge);
+  }
+
+  /* A slot that is deliberately empty: no URL has been provided for it yet. */
+  .btn-empty {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 4px dashed var(--color-muted);
+    color: var(--color-muted);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Segmented bar — the stat meter.
+
+     Each lit block is one real item, so the bar is a count, never a mood. The
+     label beside it carries the same number for anyone who cannot see blocks.
+  --------------------------------------------------------------------------- */
+  .bar {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border: 4px solid var(--color-edge);
+    background-color: var(--color-bg);
+  }
+
+  .bar-seg {
+    width: 16px;
+    height: 12px;
+  }
+
+  .bar-seg[data-on='false'] {
+    background-color: var(--color-panel);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Chip — one item in a labelled set: a stack entry, a facet, a discipline.
+     Always sits under a label that says what the set is.
+  --------------------------------------------------------------------------- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 8px;
+    min-height: 32px;
+    border: 4px solid var(--color-edge);
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Menu row — a list item with room for the cursor, which only shows on the
+     row you are on. The reserved 24px gutter keeps the label from shifting.
+  --------------------------------------------------------------------------- */
+  .menu-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 8px 0;
+  }
+
+  .menu-cursor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    flex: none;
+    color: var(--color-gold);
+    opacity: 0;
+  }
+
+  .menu-row:hover .menu-cursor,
+  .menu-row:focus-visible .menu-cursor,
+  .menu-row[data-active='true'] .menu-cursor {
+    opacity: 1;
+  }
+
+  .menu-row:hover,
+  .menu-row[data-active='true'] {
+    background-color: var(--color-bg);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Contribution heat map.
+
+     A 16px pitch — a 12px cell with a 4px gutter — so the grid lands on the
+     same 8px rhythm as everything else. Fifty-three columns come to 848px,
+     which fits the container on a desktop and scrolls sideways below that.
+
+     The four steps are mixed from the platform's own accent rather than being
+     four more tokens, so the ramp cannot drift away from the colour it belongs
+     to. An empty day is the page background, not a lighter panel: nothing
+     recorded should read as an empty socket rather than as a faint value.
+  --------------------------------------------------------------------------- */
+  .heat {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 12px);
+    gap: 4px;
+  }
+
+  .heat-cell {
+    width: 12px;
+    height: 12px;
+    background-color: var(--color-bg);
+  }
+
+  .heat-cell[data-level='1'] {
+    background-color: color-mix(in srgb, var(--heat) 30%, var(--color-panel));
+  }
+
+  .heat-cell[data-level='2'] {
+    background-color: color-mix(in srgb, var(--heat) 52%, var(--color-panel));
+  }
+
+  .heat-cell[data-level='3'] {
+    background-color: color-mix(in srgb, var(--heat) 76%, var(--color-panel));
+  }
+
+  .heat-cell[data-level='4'] {
+    background-color: var(--heat);
+  }
+
+  /* A slot past today. It holds the column's shape and nothing else. */
+  .heat-cell[data-level='none'] {
+    background-color: transparent;
+  }
+
+  .pixelated {
+    image-rendering: pixelated;
+  }
 }
 
 /* ---------------------------------------------------------------------------
+   Motion
+
+   Three effects, and no more: windows unroll open, the cursor blinks, the
+   opening line types itself out. Everything else is instant — a console with no
+   alpha blending has no way to fade, and imitating one is the whole point.
+--------------------------------------------------------------------------- */
+
+/* The window unrolls from its centre line in four visible frames. It clips
+   rather than scales, so the text inside is never squashed, and it comes to
+   rest on a negative inset so the 8px drop shadow survives. */
+@keyframes window-open {
+  from {
+    clip-path: inset(50% -16px 50% -16px);
+  }
+  to {
+    clip-path: inset(-16px -16px -16px -16px);
+  }
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* One character per step, revealed by clipping — so the timing never depends on
+   the web font having loaded.
+
+   `jump-start` rather than the default `jump-end`: an end-jumping step function
+   holds its final value for the whole last step and the forwards fill clamps to
+   it, which leaves the last character permanently clipped. Starting the jump
+   instead makes the steps run 1/n … n/n, so the line really does finish. */
+@keyframes typing {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes appear {
+  from {
+    visibility: hidden;
+  }
+  to {
+    visibility: visible;
+  }
+}
+
+/*
    Reveal-on-scroll
 
    Content is only hidden when JavaScript is running to reveal it again, and
    that condition is asked of CSS directly through the `scripting` media
    feature. Nothing touches the DOM before hydration, so `<html>` stays exactly
-   as the server rendered it.
-
-   `scripting` resolves to `none` with scripting off and to `initial-only` when
-   printing, so in both cases the rule is skipped and every section renders
-   fully visible. A browser too old to know the feature degrades the same way:
-   no fade, never hidden content.
---------------------------------------------------------------------------- */
-.reveal {
-  transition:
-    opacity 600ms var(--ease-out-soft),
-    transform 600ms var(--ease-out-soft);
-  transition-delay: var(--reveal-delay, 0ms);
-}
-
+   as the server rendered it. With scripting off — and when printing — every
+   panel renders open.
+*/
 @media (scripting: enabled) {
   .reveal:not(.is-visible) {
-    opacity: 0;
-    transform: translateY(14px);
-    will-change: opacity, transform;
+    visibility: hidden;
   }
+
+  .reveal.is-visible {
+    /* `jump-start` for the same reason the typed line uses it: an end-jumping
+       step function stops one step short and the forwards fill keeps it there,
+       which would leave every panel on the page clipped to a band. */
+    animation: window-open 200ms steps(4, jump-start) var(--reveal-delay, 0ms) both;
+  }
+}
+
+.blink {
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+
+/* `--chars` is set inline from the length of the line being typed, so the step
+   count matches the character count exactly in a monospaced face. */
+.typeline {
+  /* Clipping only works on a box that hugs the text. */
+  display: inline-block;
+  animation: typing calc(var(--chars) * 45ms) steps(var(--chars), jump-start) both;
+}
+
+/* Same reason, and it matters more here: with `jump-end` this never becomes
+   visible at all. */
+.after-typing {
+  animation: appear 1ms steps(1, jump-start) calc(var(--chars) * 45ms + 250ms) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -92,31 +488,37 @@ body {
 
   /* Same specificity as the rule above, but later in the file, so it wins. */
   .reveal:not(.is-visible) {
-    opacity: 1;
-    transform: none;
+    visibility: visible;
   }
 
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
+    transition: none !important;
+    clip-path: none !important;
     scroll-behavior: auto !important;
   }
 }
 
-/* Horizontal scrollers (screenshot strips) without a visible scrollbar. */
+/* ---------------------------------------------------------------------------
+   Horizontal scrollers (screenshot strips) — squared off, like everything else.
+--------------------------------------------------------------------------- */
 .scroll-x {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-line-strong) transparent;
+  scrollbar-color: var(--color-gold) var(--color-bg);
 }
 
 .scroll-x::-webkit-scrollbar {
-  height: 6px;
+  height: 12px;
+}
+
+.scroll-x::-webkit-scrollbar-track {
+  background-color: var(--color-bg);
+  border: 4px solid var(--color-edge);
 }
 
 .scroll-x::-webkit-scrollbar-thumb {
-  background-color: var(--color-line-strong);
-  border-radius: 999px;
+  background-color: var(--color-gold);
+  border: 4px solid var(--color-edge);
 }

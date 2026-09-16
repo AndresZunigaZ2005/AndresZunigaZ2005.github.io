@@ -1,14 +1,16 @@
 'use client'
 
+import { PixelGlyph } from './ui/Pixel'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { LANGUAGES, dictionaries } from '@/i18n'
 
 /**
- * ES / EN segmented control.
+ * ES / EN, as an options row.
  *
- * Rendered as a labelled group of toggle buttons rather than a `<select>`, so
- * both options stay visible and the current one is announced through
- * `aria-pressed`.
+ * Both options stay visible and the cursor marks the one in use, which is how
+ * a settings screen in a game of this era shows a choice. The cursor slot is
+ * reserved on both buttons so nothing shifts when the choice changes, and
+ * `aria-pressed` carries the same state for anyone who cannot see the arrow.
  */
 export function LanguageSwitcher({ className = '' }: { className?: string }) {
   const { language, dictionary, setLanguage } = useLanguage()
@@ -17,7 +19,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
     <div
       role="group"
       aria-label={dictionary.language.label}
-      className={`inline-flex items-center rounded-full border border-line bg-surface/70 p-0.5 ${className}`.trim()}
+      className={`flex items-center border-4 border-edge bg-bg ${className}`.trim()}
     >
       {LANGUAGES.map((code) => {
         const isActive = code === language
@@ -30,10 +32,11 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
             onClick={() => setLanguage(code)}
             aria-pressed={isActive}
             aria-label={`${dictionary.language.switchTo} ${target.meta.label}`}
-            className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] transition-colors duration-200 ${
-              isActive ? 'bg-ink text-canvas' : 'text-muted hover:text-ink'
+            className={`t-meta flex min-h-10 items-center gap-1 px-2 ${
+              isActive ? 'bg-gold text-edge' : 'text-muted hover:text-ink'
             }`}
           >
+            <PixelGlyph name="cursor" size={8} className={isActive ? '' : 'opacity-0'} />
             {target.meta.short}
           </button>
         )

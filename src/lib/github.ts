@@ -1,4 +1,4 @@
-import type { RepositorySummary } from '@/types'
+import type { ContributionCalendar, RepositorySummary } from '@/types'
 
 /**
  * GitHub REST helpers.
@@ -90,6 +90,95 @@ export async function fetchGitHubRepository(slug: string): Promise<RepositorySum
     if (!response.ok) return null
 
     return toSummary((await response.json()) as GitHubRepo)
+  } catch {
+    return null
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Contribution calendar
+--------------------------------------------------------------------------- */
+
+const GRAPHQL = 'https://api.github.com/graphql'
+
+/**
+ * The contribution calendar is the one thing GitHub does not expose on its REST
+ * API: it exists only in GraphQL, and GraphQL rejects unauthenticated requests
+ * outright. So this call — unlike every other helper here — needs `GITHUB_TOKEN`
+ * to be set, and returns `null` without it rather than pretending.
+ *
+ * A token also buys accuracy. The public events feed, which is the only
+ * token-free alternative, stops at roughly ninety days, caps out at 300 events
+ * and omits private work entirely; drawing it as a year of activity would
+ * quietly understate the record. This returns what the profile page shows.
+ */
+const CONTRIBUTIONS_QUERY = `
+  query ($login: String!) {
+    user(login: $login) {
+      contributionsCollection {
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+interface ContributionsResponse {
+  data?: {
+    user?: {
+      contributionsCollection: {
+        contributionCalendar: {
+          totalContributions: number
+          weeks: { contributionDays: { date: string; contributionCount: number }[] }[]
+        }
+      }
+    } | null
+  }
+  errors?: unknown
+}
+
+export async function fetchGitHubContributions(
+  username: string,
+): Promise<ContributionCalendar | null> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return null
+
+  try {
+    const response = await fetch(GRAPHQL, {
+      method: 'POST',
+      headers: {
+        Authorization: `bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: CONTRIBUTIONS_QUERY, variables: { login: username } }),
+    })
+    if (!response.ok) return null
+
+    const payload = (await response.json()) as ContributionsResponse
+    // GraphQL answers 200 with an `errors` array on a bad query or scope.
+    if (payload.errors || !payload.data?.user) return null
+
+    const calendar = payload.data.user.contributionsCollection.contributionCalendar
+    const days = calendar.weeks
+      .flatMap((week) => week.contributionDays)
+      .map((day) => ({ date: day.date, count: day.contributionCount }))
+
+    if (days.length === 0) return null
+
+    return {
+      platform: 'github',
+      days: days.filter((day) => day.count > 0),
+      total: calendar.totalContributions,
+      from: days[0].date,
+      to: days[days.length - 1].date,
+    }
   } catch {
     return null
   }

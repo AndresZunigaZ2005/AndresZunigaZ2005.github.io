@@ -18,8 +18,12 @@ export type Platform = 'github' | 'gitlab'
  */
 export type ProjectRole = 'author' | 'contributor'
 
-/** Pastel accents from the design system. Used sparingly, one per project. */
-export type Accent = 'blue' | 'green' | 'lavender' | 'peach' | 'yellow'
+/**
+ * The four accents plus the muted lavender, one per project or technology
+ * group. They appear only in panel title bars, badges and cursors — never as a
+ * wash, and never as the only thing carrying a meaning.
+ */
+export type Accent = 'gold' | 'sky' | 'leaf' | 'ember' | 'lavender'
 
 /**
  * Where a piece of copy came from. `repository` means it was derived from the
@@ -80,6 +84,31 @@ export interface ProfileLink {
   label: string
   /** `null` until the real URL is provided — never invented. */
   url: string | null
+}
+
+/** One day of recorded contributions. `date` is an ISO `YYYY-MM-DD` string. */
+export interface ContributionDay {
+  date: string
+  count: number
+}
+
+/**
+ * A platform's contribution history, normalized so GitHub and GitLab can be
+ * drawn by the same component.
+ *
+ * `days` holds only the days the platform actually reported; a date missing
+ * from it means no contribution was recorded, not that data is unavailable.
+ * When a platform cannot be reached at build time the whole calendar is `null`
+ * and its panel is left out — never replaced with zeroes, which would read as
+ * "did nothing" rather than "could not ask".
+ */
+export interface ContributionCalendar {
+  platform: Platform
+  days: ContributionDay[]
+  total: number
+  /** Inclusive ISO bounds of the window the platform reported on. */
+  from: string
+  to: string
 }
 
 /** Normalized repository summary returned by the GitHub/GitLab helpers. */

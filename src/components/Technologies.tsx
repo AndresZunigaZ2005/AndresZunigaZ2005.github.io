@@ -1,14 +1,25 @@
 'use client'
 
+import { Panel } from './ui/Panel'
 import { Reveal } from './ui/Reveal'
 import { Section } from './ui/Section'
+import { StatBar } from './ui/StatBar'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { technologyGroups } from '@/data/technologies'
-import { accentSurface } from '@/lib/accents'
 
+/**
+ * Five areas, one panel each.
+ *
+ * The meter under each list counts the tools in that area against the widest
+ * area, so the bars answer a question the list alone does not: where the work
+ * actually goes. It is a count and nothing more — no green-to-red ramp, because
+ * "four tools" is not better than "two", and colouring it that way would say so.
+ */
 export function Technologies() {
   const { dictionary } = useLanguage()
   const { technologies } = dictionary
+
+  const widest = Math.max(...technologyGroups.map((group) => group.items.length))
 
   return (
     <Section
@@ -16,32 +27,45 @@ export function Technologies() {
       eyebrow={technologies.eyebrow}
       title={technologies.title}
       lede={technologies.lede}
+      accent="sky"
     >
-      <div className="border-t border-line">
-        {technologyGroups.map((group, index) => (
-          <Reveal key={group.id} delay={index * 60}>
-            <div className="grid gap-4 border-b border-line py-8 sm:grid-cols-12 sm:gap-8 sm:py-10">
-              <h3 className="flex items-center gap-3 sm:col-span-4 lg:col-span-3">
-                <span
-                  aria-hidden
-                  className={`h-2 w-2 shrink-0 rounded-full ${accentSurface[group.accent]}`}
-                />
-                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-faint">
-                  {technologies.groups[group.id as keyof typeof technologies.groups]}
-                </span>
-              </h3>
+      <ul className="grid gap-8 sm:grid-cols-2">
+        {technologyGroups.map((group, index) => {
+          const count = group.items.length
+          const countLabel = technologies.toolCount.replace('{n}', String(count))
 
-              <ul className="flex flex-wrap items-baseline gap-x-8 gap-y-3 sm:col-span-8 lg:col-span-9">
-                {group.items.map((item) => (
-                  <li key={item} className="text-lg text-ink sm:text-xl">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        ))}
-      </div>
+          return (
+            <li key={group.id}>
+              <Reveal delay={index * 60} className="h-full">
+                <Panel
+                  className="h-full"
+                  accent={group.accent}
+                  titleAs="h3"
+                  title={technologies.groups[group.id as keyof typeof technologies.groups]}
+                  meta={countLabel}
+                >
+                  <ul className="flex flex-wrap gap-2">
+                    {group.items.map((item) => (
+                      <li key={item} className="chip t-meta">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-6">
+                    <StatBar
+                      value={count}
+                      max={widest}
+                      tone={group.accent}
+                      label={countLabel}
+                    />
+                  </div>
+                </Panel>
+              </Reveal>
+            </li>
+          )
+        })}
+      </ul>
     </Section>
   )
 }

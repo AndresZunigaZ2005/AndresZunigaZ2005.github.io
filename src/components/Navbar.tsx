@@ -3,21 +3,45 @@
 import { useEffect, useState } from 'react'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { Container } from './ui/Section'
-import { CloseIcon, GitHubIcon, GitLabIcon, MenuIcon } from './ui/Icons'
+import { Panel } from './ui/Panel'
+import { PixelGlyph } from './ui/Pixel'
 import { useLanguage } from '@/i18n/LanguageProvider'
-import { links, person } from '@/data/site'
+import { person } from '@/data/site'
 
 /** Section ids, in page order. Labels come from the active dictionary. */
 const NAV_ITEMS = ['about', 'technologies', 'projects', 'work', 'contact'] as const
 
+/**
+ * The menu bar.
+ *
+ * The cursor is not decoration: it sits on the section you are currently
+ * reading, which is the one piece of information a menu in a game like this
+ * always carries. That is also why the header is solid at every scroll position
+ * — a bar that fades in and out of translucency would be a second, competing
+ * signal about where you are, and this palette has no alpha to spend on it.
+ */
 export function Navbar() {
   const { dictionary } = useLanguage()
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [active, setActive] = useState<string | null>(null)
 
-  // A single, cheap scroll listener: the header only ever flips one boolean.
+  // One cheap passive listener: the active section is the last one whose top has
+  // risen past the upper third of the viewport. Measuring against the header
+  // instead would only ever match in the few pixels where a section heading sits
+  // directly under it, and the cursor would be absent almost all of the time.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    const onScroll = () => {
+      const line = window.innerHeight * 0.35
+      let current: string | null = null
+
+      for (const id of NAV_ITEMS) {
+        const node = document.getElementById(id)
+        if (node && node.getBoundingClientRect().top <= line) current = id
+      }
+
+      setActive(current)
+    }
+
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -38,61 +62,35 @@ export function Navbar() {
   }, [menuOpen])
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-300 ${
-        scrolled || menuOpen
-          ? 'border-b border-line bg-canvas/80 backdrop-blur-md'
-          : 'border-b border-transparent bg-transparent'
-      }`}
-    >
+    <header className="sticky top-0 z-50 border-b-4 border-edge bg-panel">
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
-          <a
-            href="#top"
-            aria-label={dictionary.nav.brandLabel}
-            className="font-mono text-[13px] font-medium tracking-[0.2em] text-ink"
-          >
-            {person.brand}
+          <a href="#top" aria-label={dictionary.nav.brandLabel} className="t-key text-gold">
+            {person.shortName}
           </a>
 
           <nav aria-label={dictionary.nav.primary} className="hidden lg:block">
-            <ul className="flex items-center gap-8">
+            <ul className="flex items-center">
               {NAV_ITEMS.map((item) => (
                 <li key={item}>
                   <a
                     href={`#${item}`}
-                    className="text-sm text-muted transition-colors duration-200 hover:text-ink"
+                    data-active={active === item}
+                    aria-current={active === item ? 'true' : undefined}
+                    className="menu-row"
                   >
-                    {dictionary.nav.items[item]}
+                    <span className="menu-cursor">
+                      <PixelGlyph name="cursor" size={16} />
+                    </span>
+                    <span className="t-small text-ink">{dictionary.nav.items[item]}</span>
                   </a>
                 </li>
               ))}
             </ul>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <LanguageSwitcher />
-
-            <span aria-hidden className="mx-1 hidden h-4 w-px bg-line lg:block" />
-
-            <a
-              href={links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`GitHub (${dictionary.common.opensInNewTab})`}
-              className="hidden rounded-full p-2 text-muted transition-colors duration-200 hover:text-ink lg:block"
-            >
-              <GitHubIcon width={18} height={18} />
-            </a>
-            <a
-              href={links.gitlab}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`GitLab (${dictionary.common.opensInNewTab})`}
-              className="hidden rounded-full p-2 text-muted transition-colors duration-200 hover:text-ink lg:block"
-            >
-              <GitLabIcon width={18} height={18} />
-            </a>
 
             <button
               type="button"
@@ -100,56 +98,39 @@ export function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
               aria-label={menuOpen ? dictionary.nav.closeMenu : dictionary.nav.openMenu}
-              className="rounded-full p-2 text-ink transition-colors duration-200 hover:bg-line/50 lg:hidden"
+              className="flex h-10 w-10 items-center justify-center border-4 border-edge bg-bg text-ink lg:hidden"
             >
-              {menuOpen ? <CloseIcon width={20} height={20} /> : <MenuIcon width={20} height={20} />}
+              <PixelGlyph name={menuOpen ? 'close' : 'menu'} size={16} />
             </button>
           </div>
         </div>
       </Container>
 
-      {/* Mobile panel. Kept out of the DOM when closed so nothing is focusable
-          behind the trigger. */}
+      {/* Kept out of the DOM when closed so nothing is focusable behind the
+          trigger. */}
       {menuOpen && (
-        <div id="mobile-menu" className="border-t border-line bg-canvas lg:hidden">
+        <div id="mobile-menu" className="border-t-4 border-edge bg-bg lg:hidden">
           <Container>
             <nav aria-label={dictionary.nav.primary} className="py-6">
-              <ul className="flex flex-col">
-                {NAV_ITEMS.map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`#${item}`}
-                      onClick={() => setMenuOpen(false)}
-                      className="block border-b border-line py-4 text-lg text-ink"
-                    >
-                      {dictionary.nav.items[item]}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-6">
-                <div className="-ml-2 flex items-center gap-1">
-                  <a
-                    href={links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`GitHub (${dictionary.common.opensInNewTab})`}
-                    className="rounded-full p-2 text-muted transition-colors duration-200 hover:text-ink"
-                  >
-                    <GitHubIcon width={20} height={20} />
-                  </a>
-                  <a
-                    href={links.gitlab}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`GitLab (${dictionary.common.opensInNewTab})`}
-                    className="rounded-full p-2 text-muted transition-colors duration-200 hover:text-ink"
-                  >
-                    <GitLabIcon width={20} height={20} />
-                  </a>
-                </div>
-              </div>
+              <Panel title={dictionary.nav.menuTitle} titleAs="h2" accent="gold">
+                <ul>
+                  {NAV_ITEMS.map((item) => (
+                    <li key={item}>
+                      <a
+                        href={`#${item}`}
+                        onClick={() => setMenuOpen(false)}
+                        data-active={active === item}
+                        className="menu-row"
+                      >
+                        <span className="menu-cursor">
+                          <PixelGlyph name="cursor" size={16} />
+                        </span>
+                        <span className="text-ink">{dictionary.nav.items[item]}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Panel>
             </nav>
           </Container>
         </div>

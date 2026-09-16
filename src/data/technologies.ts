@@ -8,12 +8,12 @@ import type { ExploringItem, TechnologyGroup } from '@/types'
 export const technologyGroups: TechnologyGroup[] = [
   {
     id: 'frontend',
-    accent: 'blue',
+    accent: 'sky',
     items: ['JavaScript', 'React', 'Next.js'],
   },
   {
     id: 'backend',
-    accent: 'green',
+    accent: 'leaf',
     items: ['Python', 'Java', 'Spring Boot', 'REST APIs'],
   },
   {
@@ -23,12 +23,12 @@ export const technologyGroups: TechnologyGroup[] = [
   },
   {
     id: 'desktop',
-    accent: 'peach',
+    accent: 'ember',
     items: ['Electron', 'Windows'],
   },
   {
     id: 'systems',
-    accent: 'yellow',
+    accent: 'gold',
     items: ['UNIX-like systems', 'VPS', 'Cloud'],
   },
 ]
