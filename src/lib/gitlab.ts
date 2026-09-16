@@ -1,4 +1,4 @@
-import type { RepositorySummary } from '@/types'
+import type { ContributionCalendar, RepositorySummary } from '@/types'
 
 /**
  * GitLab REST helpers.
@@ -99,6 +99,50 @@ async function fetchDominantLanguage(encodedId: string): Promise<string | null> 
     const languages = (await response.json()) as Record<string, number>
     const ranked = Object.entries(languages).sort(([, a], [, b]) => b - a)
     return ranked[0]?.[0] ?? null
+  } catch {
+    return null
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Contribution calendar
+--------------------------------------------------------------------------- */
+
+/**
+ * GitLab publishes the calendar behind the profile page as plain JSON — a map
+ * of `YYYY-MM-DD` to a count, covering roughly the last twelve months, with no
+ * authentication required. It is the same figure the profile shows, so unlike
+ * GitHub this needs no token.
+ *
+ * Note it counts contribution *events* — pushes, merge requests, issues,
+ * comments — not commits alone. The copy in the UI says so.
+ */
+export async function fetchGitLabContributions(
+  username: string,
+): Promise<ContributionCalendar | null> {
+  try {
+    const response = await fetch(
+      `https://gitlab.com/users/${encodeURIComponent(username)}/calendar.json`,
+      { headers: authHeaders() },
+    )
+    if (!response.ok) return null
+
+    const calendar = (await response.json()) as Record<string, number>
+
+    const days = Object.entries(calendar)
+      .filter(([, count]) => count > 0)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+
+    if (days.length === 0) return null
+
+    return {
+      platform: 'gitlab',
+      days,
+      total: days.reduce((sum, day) => sum + day.count, 0),
+      from: days[0].date,
+      to: days[days.length - 1].date,
+    }
   } catch {
     return null
   }

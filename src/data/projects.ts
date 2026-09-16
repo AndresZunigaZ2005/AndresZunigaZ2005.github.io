@@ -17,7 +17,7 @@ export const projects: Project[] = [
     repositoryLabel: 'DanielGuerrero666/EVA-Tracker-App',
     role: 'contributor',
     featured: true,
-    accent: 'lavender',
+    accent: 'sky',
     technologies: ['Electron', 'JavaScript', 'Node.js', 'PostgreSQL', 'HTML', 'CSS', 'GitLab CI'],
     tagline: {
       es: 'Seguimiento del tiempo de trabajo en el escritorio',
@@ -117,7 +117,7 @@ export const projects: Project[] = [
     repositoryLabel: 'AndresZunigaZ2005/ExpensesManager',
     role: 'author',
     featured: false,
-    accent: 'green',
+    accent: 'leaf',
     technologies: ['Swift', 'SwiftUI', 'SwiftData', 'Swift Charts', 'iOS'],
     tagline: {
       es: 'Ingresos y gastos, local-first, para iOS',
@@ -208,7 +208,7 @@ export const projects: Project[] = [
     repositoryLabel: 'Lamsu1505/ViveTuZona-Android',
     role: 'contributor',
     featured: false,
-    accent: 'peach',
+    accent: 'ember',
     technologies: ['Kotlin', 'Jetpack Compose', 'MVVM', 'Hilt', 'DataStore', 'Firebase'],
     tagline: {
       es: 'Aplicación Android con roles y multiidioma',
@@ -241,6 +241,3 @@ export const projects: Project[] = [
     source: 'repository',
   },
 ]
-
-export const featuredProject = projects.find((project) => project.featured) ?? null
-export const otherProjects = projects.filter((project) => !project.featured)

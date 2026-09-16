@@ -2,22 +2,27 @@ import type { Accent } from '@/types'
 
 /**
  * Tailwind cannot see class names built at runtime, so every accent class is
- * written out here in full. One record per role keeps the pastel palette
- * consistent and, just as importantly, rare.
+ * written out here in full.
+ *
+ * An accent only ever appears in three roles — a filled title bar, a badge, a
+ * cursor — and each role has its own record. Keeping them apart is what stops
+ * an accent leaking into body text, where none of these colours would hold up.
  */
-export const accentSurface: Record<Accent, string> = {
-  blue: 'bg-pastel-blue',
-  green: 'bg-pastel-green',
-  lavender: 'bg-pastel-lavender',
-  peach: 'bg-pastel-peach',
-  yellow: 'bg-pastel-yellow',
+
+/** Filled panel title bars. Paired with `text-edge` for the label. */
+export const accentFill: Record<Accent, string> = {
+  gold: 'bg-gold',
+  sky: 'bg-sky',
+  leaf: 'bg-leaf',
+  ember: 'bg-ember',
+  lavender: 'bg-muted',
 }
 
-/** A soft accent wash, used behind large cards where full pastel is too loud. */
-export const accentWash: Record<Accent, string> = {
-  blue: 'bg-pastel-blue/40',
-  green: 'bg-pastel-green/40',
-  lavender: 'bg-pastel-lavender/40',
-  peach: 'bg-pastel-peach/40',
-  yellow: 'bg-pastel-yellow/40',
+/** Badges, bullets and cursors sitting directly on a panel. */
+export const accentText: Record<Accent, string> = {
+  gold: 'text-gold',
+  sky: 'text-sky',
+  leaf: 'text-leaf',
+  ember: 'text-ember',
+  lavender: 'text-muted',
 }

@@ -16,6 +16,14 @@ const env = (value: string | undefined): string | null => {
 export const person = {
   name: 'Andrés Felipe Zúñiga Zuluaga',
   shortName: 'Andrés',
+  /** Everything after the first name, so the trainer card can set them apart
+      typographically while the heading still reads as one full name. */
+  familyNames: 'Felipe Zúñiga Zuluaga',
+  /**
+   * All-caps wordmark. Only for type set in a face with proper uppercase
+   * accents — Press Start 2P has none, and renders "É" as a lowercase "é", so
+   * anything set in the display face uses `shortName` instead.
+   */
   brand: 'ANDRÉS',
 } as const
 
@@ -26,6 +34,18 @@ export const links = {
   linkedin: 'https://www.linkedin.com/in/andresf-zunigaz',
   orcid: 'https://orcid.org/0009-0000-9881-2143',
   email: 'andres.felipezz@hotmail.com',
+} as const
+
+/**
+ * Account handles, kept separate from the profile URLs above.
+ *
+ * The contribution calendars are addressed by handle, not by URL, and deriving
+ * one from the other by string-slicing would break the first time a link gains
+ * a trailing slash or a query string.
+ */
+export const usernames = {
+  github: 'AndresZunigaZ2005',
+  gitlab: 'AndresZunigaZ2005',
 } as const
 
 /**

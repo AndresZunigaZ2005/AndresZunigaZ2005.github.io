@@ -28,6 +28,7 @@ export const en: Dictionary = {
     openMenu: 'Open navigation menu',
     closeMenu: 'Close navigation menu',
     primary: 'Primary navigation',
+    menuTitle: 'Menu',
     items: {
       about: 'About',
       technologies: 'Technologies',
@@ -53,11 +54,22 @@ export const en: Dictionary = {
     ctaGithub: 'GitHub',
     ctaGitlab: 'GitLab',
     facets: ['web', 'desktop', 'systems'],
+    card: {
+      title: 'Trainer card',
+      classLabel: 'Class',
+      degreeLabel: 'Degree',
+      schoolLabel: 'School',
+      school: 'Universidad del Quindío',
+      typeLabel: 'Type',
+      badgesLabel: 'Badges',
+      badgesHint: 'One per published project. Each one jumps to its entry.',
+    },
   },
 
   about: {
     eyebrow: 'About me',
     title: 'Software, and what runs underneath it.',
+    factsTitle: 'Details',
     paragraphs: [
       'I am a Systems and Computer Engineer from Universidad del Quindío, working as a Full Stack Developer.',
       'My work moves between the web — React and Next.js — and Windows desktop applications built with Electron.',
@@ -76,6 +88,7 @@ export const en: Dictionary = {
     eyebrow: 'Technologies',
     title: 'What I work with.',
     lede: 'A short, honest list: tools I actually use, not a wall of logos.',
+    toolCount: '{n} tools',
     groups: {
       frontend: 'Frontend',
       backend: 'Backend',
@@ -98,7 +111,9 @@ export const en: Dictionary = {
       author: 'My own project.',
       contributor: 'A collaborative project: I take part as a contributor, not as the sole author.',
     },
+    entry: 'Entry',
     labels: {
+      type: 'Type',
       stack: 'Stack',
       highlights: 'What it does',
       screenshots: 'Screenshots',
@@ -115,13 +130,34 @@ export const en: Dictionary = {
     github: {
       name: 'GitHub',
       description: 'Personal projects, experiments and open-source work.',
-      cta: 'Visit GitHub profile',
+      cta: 'Open profile',
     },
     gitlab: {
       name: 'GitLab',
       description: 'Development projects, infrastructure and CI/CD workflows.',
-      cta: 'Visit GitLab profile',
+      cta: 'Open profile',
     },
+  },
+
+  activity: {
+    eyebrow: 'Activity',
+    title: 'A year of work, day by day.',
+    lede: 'The calendars GitHub and GitLab publish, untouched. They are fetched when the site is built, so the date below is the date of the last deploy.',
+    updated: 'Updated {date}',
+    total: '{n} contributions',
+    totalOne: '1 contribution',
+    summary: '{total} on {platform}, between {from} and {to}.',
+    day: '{n} contributions on {date}',
+    dayOne: '1 contribution on {date}',
+    dayNone: 'No contributions on {date}',
+    legendLess: 'less',
+    legendMore: 'more',
+    sources: {
+      github: 'Commits, pull requests, issues and reviews, as recorded by the GitHub calendar.',
+      gitlab: 'Contribution events as recorded by GitLab: pushes, merge requests, issues and comments.',
+    },
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    weekdays: ['Mon', 'Wed', 'Fri'],
   },
 
   exploring: {
@@ -136,6 +172,7 @@ export const en: Dictionary = {
       deepening: 'Already part of my work; still learning.',
       new: 'An area I am starting to explore.',
     },
+    countLabel: '{n} of {total} areas',
   },
 
   contact: {
@@ -144,6 +181,7 @@ export const en: Dictionary = {
     highlight: "Let's connect.",
     lede: 'Email is the most direct way, but you can also find me in these places.',
     emailLabel: 'Email me',
+    directoryTitle: 'Contacts',
   },
 
   footer: {

@@ -2,9 +2,14 @@ import { ImageResponse } from 'next/og'
 import { person } from '@/data/site'
 
 /**
- * Social preview card. Built from the same tokens as the page — neutral canvas,
- * one pastel accent, generous negative space — so a shared link looks like the
- * site it points at.
+ * Social preview card. Built from the same tokens as the page — dark ground,
+ * one framed window, gold for the name — so a shared link looks like the site
+ * it points at.
+ *
+ * The frame is drawn as nested boxes for the same reason it is on the page: a
+ * hard outline, a light bevel and a solid fill, with a hard offset shadow and
+ * no blur anywhere. Satori has no web fonts here, so the type is the fallback
+ * face; everything else that carries the look is geometry and colour.
  *
  * This is a route handler rather than the `opengraph-image.tsx` metadata
  * convention so the URL ends in `.png`. GitHub Pages types a response from the
@@ -16,6 +21,12 @@ export const dynamic = 'force-static'
 
 const size = { width: 1200, height: 630 }
 
+const BG = '#1a1a2e'
+const PANEL = '#2d2d44'
+const EDGE = '#0c0c0c'
+const MUTED = '#a0a0c0'
+const GOLD = '#ffcb05'
+
 export function GET() {
   return new ImageResponse(
     (
@@ -24,75 +35,77 @@ export function GET() {
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: '#fafaf8',
-          color: '#1d1d1f',
-          padding: '72px 80px',
-          position: 'relative',
+          padding: '56px 64px 72px',
+          background: BG,
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: -160,
-            right: -120,
-            width: 520,
-            height: 520,
-            borderRadius: 9999,
-            background: '#e8e2f3',
-            opacity: 0.75,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -200,
-            left: -140,
-            width: 460,
-            height: 460,
-            borderRadius: 9999,
-            background: '#dceaf7',
-            opacity: 0.7,
-          }}
-        />
-
+        {/* Outer outline plus light bevel. */}
         <div
           style={{
             display: 'flex',
-            fontSize: 20,
-            letterSpacing: '0.24em',
-            color: '#6e6e73',
+            flex: 1,
+            padding: 8,
+            background: MUTED,
+            border: `8px solid ${EDGE}`,
+            boxShadow: `0 16px 0 0 ${EDGE}`,
           }}
         >
-          {person.brand}
-        </div>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, background: PANEL }}>
+            {/* Title bar. */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '16px 32px',
+                background: GOLD,
+                borderBottom: `8px solid ${EDGE}`,
+                color: EDGE,
+                fontSize: 28,
+                letterSpacing: '0.12em',
+              }}
+            >
+              {person.brand}
+            </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', fontSize: 68, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-            {person.name}
-          </div>
-          <div style={{ display: 'flex', marginTop: 24, fontSize: 32, color: '#6e6e73' }}>
-            Ingeniero de Sistemas y Computación · Full Stack Developer
-          </div>
-        </div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                flex: 1,
+                padding: '0 48px',
+              }}
+            >
+              <div style={{ display: 'flex', fontSize: 64, color: GOLD, lineHeight: 1.1 }}>
+                {person.name}
+              </div>
+              <div style={{ display: 'flex', marginTop: 24, fontSize: 34, color: '#ffffff' }}>
+                Ingeniero de Sistemas y Computación
+              </div>
+              <div style={{ display: 'flex', marginTop: 8, fontSize: 34, color: MUTED }}>
+                Full Stack Developer
+              </div>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: 28,
-            fontSize: 22,
-            color: '#8e8e93',
-            letterSpacing: '0.04em',
-          }}
-        >
-          <span>React</span>
-          <span>·</span>
-          <span>Next.js</span>
-          <span>·</span>
-          <span>Electron</span>
-          <span>·</span>
-          <span>UNIX</span>
+              {/* The type chips from the trainer card. */}
+              <div style={{ display: 'flex', gap: 16, marginTop: 40 }}>
+                {['React', 'Next.js', 'Electron', 'UNIX'].map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      display: 'flex',
+                      padding: '8px 16px',
+                      background: BG,
+                      border: `6px solid ${EDGE}`,
+                      color: '#ffffff',
+                      fontSize: 26,
+                    }}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     ),

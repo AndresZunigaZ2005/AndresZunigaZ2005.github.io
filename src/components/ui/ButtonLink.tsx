@@ -1,42 +1,38 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary'
-type Size = 'md' | 'sm'
 
 interface ButtonLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string
   children: ReactNode
   variant?: Variant
-  size?: Size
   /** Adds `target="_blank"` plus the rel hardening that must come with it. */
   external?: boolean
   icon?: ReactNode
-  /** Places the icon after the label instead of before it. */
-  iconAfter?: boolean
 }
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-ink text-canvas border-ink hover:bg-[#000] hover:border-[#000]',
-  secondary: 'bg-surface text-ink border-line-strong hover:border-ink',
-}
-
-const sizes: Record<Size, string> = {
-  md: 'h-11 px-5 text-sm',
-  sm: 'h-9 px-4 text-[13px]',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
 }
 
 /**
- * The single link-shaped control used across the page, so every call to action
- * has the same height, focus ring and hover behaviour.
+ * The single link-shaped control on the page.
+ *
+ * Labels are set in the display face, so they have to stay short — two or three
+ * words. That is a constraint worth keeping: a button says what happens when
+ * you press it, and anything that needs a sentence is not a button.
+ *
+ * Pressing it moves the control down by exactly the height of its own shadow,
+ * so it lands flush against the page. That is the whole interaction: no
+ * transition, no easing, one frame.
  */
 export function ButtonLink({
   href,
   children,
   variant = 'secondary',
-  size = 'md',
   external = false,
   icon,
-  iconAfter = false,
   className = '',
   ...rest
 }: ButtonLinkProps) {
@@ -49,11 +45,10 @@ export function ButtonLink({
       href={href}
       {...externalProps}
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 rounded-full border font-medium transition-colors duration-200 ${variants[variant]} ${sizes[size]} ${className}`.trim()}
+      className={`btn t-key ${variants[variant]} ${className}`.trim()}
     >
-      {icon && !iconAfter && <span className="shrink-0">{icon}</span>}
+      {icon && <span className="shrink-0">{icon}</span>}
       <span>{children}</span>
-      {icon && iconAfter && <span className="shrink-0">{icon}</span>}
     </a>
   )
 }

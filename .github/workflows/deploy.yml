@@ -3,6 +3,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master]
+  # The contribution calendars are fetched at build time and baked into the
+  # HTML, so the site is only as current as its last deploy. A daily run keeps
+  # them from going stale. Note GitHub disables scheduled workflows in a
+  # repository with no activity for 60 days; re-enable it from the Actions tab.
+  schedule:
+    - cron: '15 6 * * *'
   # Allows a manual run from the Actions tab.
   workflow_dispatch:
 
@@ -33,6 +39,21 @@ jobs:
         env:
           # Canonical origin used by metadataBase, robots.txt and sitemap.xml.
           NEXT_PUBLIC_SITE_URL: https://andreszunigaz2005.github.io
+          # Personal access token with the `read:user` scope, used only to read
+          # the contribution calendar through GitHub's GraphQL API — the REST
+          # API does not expose it and GraphQL refuses anonymous requests. The
+          # workflow's own built-in token is scoped to this repository and
+          # cannot read a user's contributions, so it will not do.
+          #
+          # The secret is named GH_CONTRIBUTIONS_TOKEN because GitHub rejects
+          # repository secrets whose names begin with `GITHUB_`; it is mapped
+          # here onto the variable `src/lib/github.ts` actually reads. The token
+          # stays on the runner and never reaches the browser: the build only
+          # emits the resulting counts.
+          #
+          # If the secret is missing the build still succeeds — the GitHub
+          # panel is simply left out.
+          GITHUB_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN }}
 
       - uses: actions/configure-pages@v5
 

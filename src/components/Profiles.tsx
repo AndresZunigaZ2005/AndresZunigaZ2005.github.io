@@ -1,76 +1,72 @@
 'use client'
 
 import { ButtonLink } from './ui/ButtonLink'
+import { Panel } from './ui/Panel'
 import { Reveal } from './ui/Reveal'
 import { Section } from './ui/Section'
+import { PixelGlyph } from './ui/Pixel'
 import { GitHubIcon, GitLabIcon } from './ui/Icons'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { links } from '@/data/site'
 
 /**
- * "Where I build" — the two platforms, side by side.
+ * Two hosts, two crates.
  *
- * The cards are intentionally data-free for now. When the GitHub/GitLab helpers
- * in `src/lib` are wired up, recent repositories drop in below each description
- * without changing this layout.
+ * A repository is storage, so these are drawn as storage: a labelled box with
+ * what is kept in it and a way in. The cards are deliberately data-free for
+ * now — when the GitHub/GitLab helpers in `src/lib` are wired up, recent
+ * repositories drop in under each description without changing this layout.
  */
 export function Profiles() {
   const { dictionary } = useLanguage()
   const { profiles, common } = dictionary
 
-  const platforms = [
-    {
-      id: 'github' as const,
-      copy: profiles.github,
-      href: links.github,
-      Icon: GitHubIcon,
-      accent: 'bg-pastel-blue',
-    },
-    {
-      id: 'gitlab' as const,
-      copy: profiles.gitlab,
-      href: links.gitlab,
-      Icon: GitLabIcon,
-      accent: 'bg-pastel-peach',
-    },
+  const hosts = [
+    { id: 'github' as const, copy: profiles.github, href: links.github, Icon: GitHubIcon },
+    { id: 'gitlab' as const, copy: profiles.gitlab, href: links.gitlab, Icon: GitLabIcon },
   ]
 
   return (
-    <Section id="work" eyebrow={profiles.eyebrow} title={profiles.title} lede={profiles.lede}>
-      <div className="grid gap-6 md:grid-cols-2 lg:gap-8">
-        {platforms.map(({ id, copy, href, Icon, accent }, index) => (
-          <Reveal key={id} delay={index * 90}>
-            <article className="flex h-full flex-col rounded-3xl border border-line bg-surface p-8 transition-colors duration-300 hover:border-line-strong sm:p-10">
-              <span
-                aria-hidden
-                className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl text-ink ${accent}`}
+    <Section
+      id="work"
+      eyebrow={profiles.eyebrow}
+      title={profiles.title}
+      lede={profiles.lede}
+      accent="lavender"
+    >
+      <ul className="grid gap-8 md:grid-cols-2">
+        {hosts.map(({ id, copy, href, Icon }, index) => (
+          <li key={id}>
+            <Reveal delay={index * 90} className="h-full">
+              <Panel
+                className="h-full"
+                accent="lavender"
+                titleAs="h3"
+                title={copy.name}
+                bodyClassName="flex flex-col"
               >
-                <Icon width={22} height={22} />
-              </span>
+                <div className="flex items-start gap-4">
+                  <PixelGlyph name="crate" size={32} className="mt-1 shrink-0 text-muted" />
+                  <p className="text-ink">{copy.description}</p>
+                </div>
 
-              <h3 className="mt-7 text-2xl font-medium tracking-[-0.01em] text-ink">{copy.name}</h3>
-              <p className="mt-3 max-w-sm text-base leading-relaxed text-muted">
-                {copy.description}
-              </p>
+                <p className="t-small mt-6 text-muted">{href.replace('https://', '')}</p>
 
-              <p className="mt-6 font-mono text-[11px] text-faint">
-                {href.replace('https://', '')}
-              </p>
-
-              <div className="mt-auto pt-8">
-                <ButtonLink
-                  href={href}
-                  external
-                  size="sm"
-                  aria-label={`${copy.cta} (${common.opensInNewTab})`}
-                >
-                  {copy.cta}
-                </ButtonLink>
-              </div>
-            </article>
-          </Reveal>
+                <div className="mt-auto pt-8">
+                  <ButtonLink
+                    href={href}
+                    external
+                    icon={<Icon width={16} height={16} />}
+                    aria-label={`${copy.cta} — ${copy.name} (${common.opensInNewTab})`}
+                  >
+                    {copy.cta}
+                  </ButtonLink>
+                </div>
+              </Panel>
+            </Reveal>
+          </li>
         ))}
-      </div>
+      </ul>
     </Section>
   )
 }

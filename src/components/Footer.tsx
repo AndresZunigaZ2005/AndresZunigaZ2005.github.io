@@ -5,24 +5,28 @@ import { profileIcons } from './ui/Icons'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { person, profileLinks } from '@/data/site'
 
+/**
+ * The bottom rule. Deliberately the quietest thing on the page: no panel, no
+ * accent, just the name, the role and the same links one more time.
+ */
 export function Footer() {
   const { dictionary } = useLanguage()
   const { footer, common } = dictionary
 
-  // The footer repeats the profile row minus email, which lives in Contact.
   const socialLinks = profileLinks.filter((profile) => profile.id !== 'email')
 
   return (
-    <footer className="border-t border-line">
+    <footer className="mt-8 border-t-4 border-edge bg-panel">
       <Container>
-        <div className="flex flex-col gap-10 py-14 sm:py-16 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-8 py-12 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="text-base font-medium text-ink">{person.name}</p>
-            <p className="mt-1 text-sm text-muted">{footer.role}</p>
+            <p className="t-key text-gold">{person.shortName}</p>
+            <p className="t-small mt-3 text-ink">{person.name}</p>
+            <p className="t-small text-muted">{footer.role}</p>
           </div>
 
           <nav aria-label={footer.linksLabel}>
-            <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            <ul className="flex flex-wrap gap-x-6 gap-y-2">
               {socialLinks.map((profile) => {
                 const Icon = profileIcons[profile.id]
 
@@ -34,7 +38,7 @@ export function Footer() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`${profile.label} (${common.opensInNewTab})`}
-                        className="inline-flex items-center gap-2 text-sm text-muted transition-colors duration-200 hover:text-ink"
+                        className="t-small inline-flex items-center gap-2 text-muted hover:text-gold"
                       >
                         {Icon && <Icon width={15} height={15} />}
                         {profile.label}
@@ -42,13 +46,11 @@ export function Footer() {
                     ) : (
                       <span
                         title={common.pendingHint}
-                        className="inline-flex items-center gap-2 text-sm text-faint"
+                        className="t-small inline-flex items-center gap-2 text-muted"
                       >
                         {Icon && <Icon width={15} height={15} />}
                         {profile.label}
-                        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">
-                          {common.pending}
-                        </span>
+                        <span className="t-meta">{common.pending}</span>
                       </span>
                     )}
                   </li>
@@ -58,8 +60,8 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-line py-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-mono text-[11px] tracking-wide text-faint">{footer.rights}</p>
+        <div className="border-t-4 border-edge py-8">
+          <p className="t-small text-muted">{footer.rights}</p>
         </div>
       </Container>
     </footer>

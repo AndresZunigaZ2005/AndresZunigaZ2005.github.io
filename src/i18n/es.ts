@@ -29,6 +29,7 @@ export const es = {
     openMenu: 'Abrir menú de navegación',
     closeMenu: 'Cerrar menú de navegación',
     primary: 'Navegación principal',
+    menuTitle: 'Menú',
     items: {
       about: 'Sobre mí',
       technologies: 'Tecnologías',
@@ -54,11 +55,22 @@ export const es = {
     ctaGithub: 'GitHub',
     ctaGitlab: 'GitLab',
     facets: ['web', 'escritorio', 'sistemas'],
+    card: {
+      title: 'Tarjeta de entrenador',
+      classLabel: 'Clase',
+      degreeLabel: 'Título',
+      schoolLabel: 'Escuela',
+      school: 'Universidad del Quindío',
+      typeLabel: 'Tipo',
+      badgesLabel: 'Medallas',
+      badgesHint: 'Una por proyecto publicado. Llevan a su ficha.',
+    },
   },
 
   about: {
     eyebrow: 'Sobre mí',
     title: 'Software, y lo que hay debajo.',
+    factsTitle: 'Datos',
     paragraphs: [
       'Soy Ingeniero de Sistemas y Computación por la Universidad del Quindío y trabajo como Full Stack Developer.',
       'Mi trabajo se mueve entre la web, con React y Next.js, y las aplicaciones de escritorio para Windows construidas con Electron.',
@@ -77,6 +89,7 @@ export const es = {
     eyebrow: 'Tecnologías',
     title: 'Con lo que trabajo.',
     lede: 'Una lista corta y honesta: herramientas que uso, no un catálogo de logos.',
+    toolCount: '{n} herramientas',
     groups: {
       frontend: 'Frontend',
       backend: 'Backend',
@@ -99,7 +112,9 @@ export const es = {
       author: 'Proyecto propio.',
       contributor: 'Proyecto colaborativo: participo como contribuidor, no como único autor.',
     },
+    entry: 'Ficha',
     labels: {
+      type: 'Tipo',
       stack: 'Stack',
       highlights: 'Qué incluye',
       screenshots: 'Capturas',
@@ -116,13 +131,34 @@ export const es = {
     github: {
       name: 'GitHub',
       description: 'Proyectos personales, experimentos y trabajo open source.',
-      cta: 'Ver perfil de GitHub',
+      cta: 'Abrir perfil',
     },
     gitlab: {
       name: 'GitLab',
       description: 'Proyectos de desarrollo, infraestructura y flujos de CI/CD.',
-      cta: 'Ver perfil de GitLab',
+      cta: 'Abrir perfil',
     },
+  },
+
+  activity: {
+    eyebrow: 'Actividad',
+    title: 'Un año de trabajo, día a día.',
+    lede: 'Los calendarios que publican GitHub y GitLab, sin retocar. Se piden al construir el sitio, así que la fecha de abajo es la del último despliegue.',
+    updated: 'Actualizado el {date}',
+    total: '{n} contribuciones',
+    totalOne: '1 contribución',
+    summary: '{total} en {platform}, entre el {from} y el {to}.',
+    day: '{n} contribuciones el {date}',
+    dayOne: '1 contribución el {date}',
+    dayNone: 'Sin contribuciones el {date}',
+    legendLess: 'menos',
+    legendMore: 'más',
+    sources: {
+      github: 'Commits, pull requests, issues y revisiones, según el calendario que registra GitHub.',
+      gitlab: 'Eventos de contribución que registra GitLab: pushes, merge requests, issues y comentarios.',
+    },
+    months: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+    weekdays: ['Lun', 'Mié', 'Vie'],
   },
 
   exploring: {
@@ -137,6 +173,7 @@ export const es = {
       deepening: 'Ya forma parte de mi trabajo; sigo aprendiendo.',
       new: 'Área que estoy empezando a explorar.',
     },
+    countLabel: '{n} de {total} áreas',
   },
 
   contact: {
@@ -145,6 +182,7 @@ export const es = {
     highlight: 'Hablemos.',
     lede: 'La forma más directa es por correo, pero también estoy en estos sitios.',
     emailLabel: 'Escríbeme',
+    directoryTitle: 'Agenda',
   },
 
   footer: {
